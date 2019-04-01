@@ -4,13 +4,17 @@ TOOLS:=$(BUILD_ROOT)/tools
 TERRAFORM_VERSION:=0.11.3
 TERRAFORM=$(shell $(TOOLS)/get-terraform.sh $(TERRAFORM_VERSION) $(BIN))
 
-.PHONY: clean
+.PHONY: clean setup
 
-default:
-	@echo ""
+setup: config.mk state.tf
 
-plan-%:
-	$(TOOLS)/tf-plan.sh $@
+config.mk: Makefile
+	echo TERRAFORM=$(TERRAFORM) > config.mk
+	echo BUILD_ROOT=$(BUILD_ROOT) >> config.mk
+
+basic-vpc:
+	$(MAKE) -C basic-vpc
 
 clean:
-	rm -rf $(BIN)
+	rm -rf $(BIN) config.mk
+

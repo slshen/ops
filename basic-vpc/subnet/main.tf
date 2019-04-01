@@ -5,24 +5,28 @@ locals {
 }
 
 resource "aws_subnet" "s" {
-  vpc_id = "${var.vpc}"
-  availability_zone = "${local.az_names[count.index]}"
-  count = "${length(local.az_names)}"
-  cidr_block = "${cidrsubnet(var.cidr_block_prefix, var.cidr_block_newbits, var.cidr_block_offset + count.index)}"
+  vpc_id                  = "${var.vpc}"
+  availability_zone       = "${local.az_names[count.index]}"
+  count                   = "${length(local.az_names)}"
+  cidr_block              = "${cidrsubnet(var.cidr_block_prefix, var.cidr_block_newbits, var.cidr_block_offset + count.index)}"
+  map_public_ip_on_launch = "${var.map_public_ip_on_launch}"
+
   tags = {
     Name = "${var.name}-${local.az_names[count.index]}"
+    BaseName = "${var.name}"
   }
 }
 
 resource "aws_route_table" "r" {
   vpc_id = "${var.vpc}"
+
   tags = {
     Name = "${var.name}"
   }
 }
 
 resource "aws_route_table_association" "a" {
-  count = "${length(local.az_names)}"
-  subnet_id = "${aws_subnet.s.*.id[count.index]}"
+  count          = "${length(local.az_names)}"
+  subnet_id      = "${aws_subnet.s.*.id[count.index]}"
   route_table_id = "${aws_route_table.r.id}"
 }
