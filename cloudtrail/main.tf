@@ -50,6 +50,14 @@ resource "aws_s3_bucket" "logs" {
   }
 }
 
+resource "aws_s3_bucket_public_access_block" "logs" {
+  bucket = "${local.bucket_name}"
+  block_public_acls = true
+  block_public_policy = true
+  ignore_public_acls = true
+  restrict_public_buckets = true
+}
+
 data "aws_iam_policy_document" "sns-cloudtrail" {
   statement {
     principals {
@@ -126,10 +134,8 @@ resource "aws_cloudtrail" "default" {
   name = "default"
   s3_bucket_name = "${local.bucket_name}"
   s3_key_prefix = "cloudtrail"
+  include_global_service_events = true
   is_multi_region_trail = true
-  event_selector {
-    include_management_events = true
-  }
   sns_topic_name = "cloudtrail"
   depends_on = [ "aws_sns_topic.cloudtrail" ]
 }
