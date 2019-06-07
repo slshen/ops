@@ -3,4 +3,5 @@ terraform.tfstate*
 .terraform
 config.mk
 state.tf
+terraform.tfvars
 
