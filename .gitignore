@@ -2,6 +2,7 @@ bin/*
 terraform.tfstate*
 .terraform
 config.mk
+**/config.tf
 state.tf
 terraform.tfvars
 

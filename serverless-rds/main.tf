@@ -25,8 +25,25 @@ resource "aws_db_subnet_group" "default" {
 }
 
 resource "aws_security_group" "db" {
-  name = "${var.name}-serverless-rds"
+  name = "${var.name}"
   vpc_id = "${data.aws_vpc.main.id}"
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_security_group" "db-access" {
+  name = "${var.name}-access"
+  vpc_id = "${data.aws_vpc.main.id}"
+}
+
+resource "aws_security_group_rule" "db-access" {
+  type = "ingress"
+  from_port = 3306
+  to_port = 3306
+  protocol = "tcp"
+  security_group_id = "${aws_security_group.db.id}"
+  source_security_group_id = "${aws_security_group.db-access.id}"
 }
 
 resource "aws_rds_cluster" "serverless" {
