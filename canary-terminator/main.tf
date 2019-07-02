@@ -1,5 +1,5 @@
 resource "aws_iam_role" "lambda" {
-  name = "${var.name}"
+  name = "canary-terminator"
   description = "Allow a lambda function to terminate an instance"
   assume_role_policy = <<EOF
 {
@@ -20,16 +20,23 @@ EOF
 
 data "aws_iam_policy_document" "terminate" {
   statement {
-    actions = [ "ec2:DescribeInstances" ]
+    actions = [
+      "ec2:DescribeInstances",
+      "elasticloadbalancing:DescribeLoaderBalancers",
+      "elasticloadbalancing:DescribeTags"
+    ]
     resources = [ "*" ]
   }
   statement {
-    actions = [ "ec2:TerminateInstances" ]
+    actions = [
+      "ec2:TerminateInstances",
+      "elasticloadbalancing:DeleteLoaderBalancer"
+    ]
     resources = [ "*" ]
     condition {
-      test = "StringEquals"
-      variable = "ec2:ResourceTag/${var.tag_name}"
-      values = [ "${var.tag_value}" ]
+      test = "StringLike"
+      variable = "ec2:ResourceTag/Name"
+      values = [ "canary*" ]
     }
   }
 }
@@ -41,13 +48,13 @@ resource "aws_iam_role_policy_attachment" "lambda-basic" {
 
 resource "aws_iam_role_policy" "lambda-terminate" {
   role = "${aws_iam_role.lambda.name}"
-  name = "terminate-instances"
+  name = "terminate"
   policy = "${data.aws_iam_policy_document.terminate.json}"
 }
 
 resource "aws_lambda_function" "terminate" {
   filename = "${path.module}/function.zip"
-  function_name = "${var.name}"
+  function_name = "canary-terminator"
   handler = "function.handler"
   role = "${aws_iam_role.lambda.arn}"
   runtime = "python3.7"

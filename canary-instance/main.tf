@@ -74,10 +74,3 @@ resource "aws_instance" "canary" {
     Name = "canary"
   }
 }
-
-module "terminator" {
-  source = "lambda-terminator"
-  name = "canary-instance-terminator"
-  tag_name = "Name"
-  tag_value = "canary"
-}

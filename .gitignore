@@ -5,4 +5,5 @@ config.mk
 **/config.tf
 state.tf
 terraform.tfvars
+.vscode/
 
