@@ -79,3 +79,8 @@ resource "aws_lambda_permission" "allow_cloudwatch" {
   principal     = "events.amazonaws.com"
   source_arn    = "${aws_cloudwatch_event_rule.hourly.arn}"
 }
+
+resource "aws_cloudwatch_log_group" "logs" {
+  name = "/aws/lambda/${aws_lambda_function.terminate.function_name}"
+  retention_in_days = 3
+}
