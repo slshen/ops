@@ -22,7 +22,7 @@ data "aws_iam_policy_document" "terminate" {
   statement {
     actions = [
       "ec2:DescribeInstances",
-      "elasticloadbalancing:DescribeLoaderBalancers",
+      "elasticloadbalancing:DescribeLoadBalancers",
       "elasticloadbalancing:DescribeTags"
     ]
     resources = [ "*" ]
@@ -30,7 +30,7 @@ data "aws_iam_policy_document" "terminate" {
   statement {
     actions = [
       "ec2:TerminateInstances",
-      "elasticloadbalancing:DeleteLoaderBalancer"
+      "elasticloadbalancing:DeleteLoadBalancer"
     ]
     resources = [ "*" ]
     condition {

@@ -16,10 +16,9 @@ if [ ! -x "$bin/terraform-$version" ]; then
     x86_64) arch=amd64 ;;
   esac
   dist=https://releases.hashicorp.com/terraform/$version/terraform_${version}_${os}_${arch}.zip
-  echo $dist
   zf=$(basename $dist)
-  wget $dist
-  unzip $zf
+  wget $dist 1>&2
+  unzip $zf 1>&2
   mv terraform terraform-$version
 fi
 

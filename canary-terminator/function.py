@@ -45,7 +45,7 @@ def terminate_load_balancers():
                     load_balancer = load_balancers[tags_description["ResourceArn"]]
                     created_time = load_balancer["CreatedTime"].replace(tzinfo = None)
                     dt = datetime.utcnow() - created_time
-                    if dt > timedelta(0, 8 * 60):
+                    if dt > timedelta(0, 8 * 3600):
                         print("deleting", load_balancer["LoadBalancerArn"])
                         elb.delete_load_balancer(LoadBalancerArn = load_balancer["LoadBalancerArn"])
 
