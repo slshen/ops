@@ -2,11 +2,12 @@ import boto3
 from datetime import datetime, timedelta
 
 def handler(event, context):
-    terminate_instances()
-    terminate_load_balancers()
+    for region in [ "us-east-1", "us-west-2" ]:
+        terminate_instances(region)
+        terminate_load_balancers(region)
 
-def terminate_instances():
-    ec2 = boto3.client("ec2", region_name = "us-west-2")
+def terminate_instances(region):
+    ec2 = boto3.client("ec2", region_name = region)
     for result in \
         ec2.get_paginator("describe_instances") \
            .paginate(Filters =
@@ -31,8 +32,8 @@ def terminate_instances():
                 print("terminating", instance_ids)
                 ec2.terminate_instances(InstanceIds = instance_ids)
 
-def terminate_load_balancers():
-    elb = boto3.client('elbv2')
+def terminate_load_balancers(region):
+    elb = boto3.client('elbv2', region_name = region)
     for result in elb.get_paginator("describe_load_balancers").paginate():
         load_balancers = {}
         for load_balancer in result["LoadBalancers"]:

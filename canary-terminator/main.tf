@@ -28,14 +28,20 @@ data "aws_iam_policy_document" "terminate" {
     resources = [ "*" ]
   }
   statement {
-    actions = [
-      "ec2:TerminateInstances",
-      "elasticloadbalancing:DeleteLoadBalancer"
-    ]
+    actions = [ "ec2:TerminateInstances" ]
     resources = [ "*" ]
     condition {
       test = "StringLike"
       variable = "ec2:ResourceTag/Name"
+      values = [ "canary*" ]
+    }
+  }
+  statement {
+    actions = [ "elasticloadbalancing:DeleteLoadBalancer" ]
+    resources = [ "*" ]
+    condition {
+      test = "StringLike"
+      variable = "elasticloadbalancing:ResourceTag/Name"
       values = [ "canary*" ]
     }
   }
